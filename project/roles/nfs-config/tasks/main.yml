@@ -1,0 +1,42 @@
+---
+# tasks file for role_nfs
+#
+- name: NFS configuration file (/etc/exports)
+  ansible.builtin.lineinfile:
+          path: /etc/exports
+          line: "{{ conf_line }}"
+  notify: restart nfs-server
+
+- name: Create Destination Directory
+  ansible.builtin.file:
+          path: "{{ path }}"
+          owner: "{{ owner }}"
+          group: "{{ group }}"
+          mode: "{{ dir_mode }}"
+          state: directory
+          recurse: yes
+
+- name: Set SELinux Context
+  community.general.sefcontext:
+          target: "{{ path }}(/.*)?"
+          setype: "{{ se_type }}"
+          state: present
+  notify: reset fcontext
+  register: context_added
+
+# - name: Print
+#  debug:
+#          msg: "{{ context_added }}"
+
+- name: Trigger handler #because the context may already exists
+  command: /bin/true
+  notify: reset fcontext
+  when: context_added is changed
+
+- name: Add firewall rule
+  firewalld:
+          service: "{{ firewall_service }}"
+          permanent: true
+          state: enabled
+          immediate: yes
+

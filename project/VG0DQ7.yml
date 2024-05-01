@@ -1,0 +1,25 @@
+---
+- name: Main Playbook for Ansible Project
+  hosts: all
+  vars_files:
+          - varsfile.yml
+
+  pre_tasks:
+            - import_tasks: pretasks/install_packages.yml
+  roles:
+          - passwd_change
+
+- name: NFS Server Configuration
+  hosts: servers
+  vars_files:
+          - varsfile.yml
+
+  roles:
+          - nfs-config
+
+- name: Workstation Mount Configuration
+  hosts: mnt_client
+  vars_files:
+          - varsfile.yml
+  roles:
+          - mount

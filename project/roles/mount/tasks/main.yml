@@ -1,0 +1,24 @@
+---
+- name: Check if mount point already exists
+  command: mountpoint -q "{{ mnt_path }}"
+  register: mnt_exists
+  failed_when: False
+  changed_when: False
+
+- name: Creating / Configure Dest Mount Folder
+  file:
+          path: "{{ mnt_path }}"
+          state: directory
+          owner: "{{ mnt_owner }}"
+          group: "{{ mnt_group }}"
+          mode: "{{ mnt_mode }}"
+          recurse: yes
+  when: not mnt_exists.rc == 0
+
+- name: Insert Mounting in fstab
+  mount:
+          path: "{{ mnt_path }}"
+          src: "{{ nfs_server }}:{{ path }}"
+          fstype: nfs
+          state: mounted
+  notify: daemon reload

@@ -1,0 +1,8 @@
+---
+- name: restart nfs-server
+  service:
+          name: nfs-server
+          state: restarted
+
+- name: reset fcontext
+  command: restorecon -irv "{{ path }}"

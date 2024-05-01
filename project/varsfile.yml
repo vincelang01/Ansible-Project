@@ -1,0 +1,21 @@
+---
+path: "/data/comp"
+iprange: ""
+mode: "(rw,sync,all_squash)"
+conf_line: "{{ path }} {{ iprange }}{{ mode }}"
+
+owner: nobody
+group: nobody
+dir_mode: 0775
+
+service: nfs-server
+firewall_service: nfs
+
+se_type: nfs_t
+
+mnt_path: /data/
+mnt_owner: student
+mnt_group: student
+mnt_mode: 0775
+nfs_server: serverb
+

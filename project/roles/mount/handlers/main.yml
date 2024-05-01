@@ -1,0 +1,4 @@
+---
+- name: daemon reload
+  service:
+          daemon_reload: true
